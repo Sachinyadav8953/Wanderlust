@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const mongoose=require("mongoose");
 const initData=require("./data.js");
 const Listing=require("../models/listing.js");
+const User=require("../models/user.js");
 
 const MONGO_URL = process.env.ATLAS_DB || "mongodb://127.0.0.1:27017/wanderlust";
 main()
@@ -77,9 +78,23 @@ function getCategory(listing) {
 
 const initDB=async()=>{
     await Listing.deleteMany({});
+    
+    let defaultOwner = '69c5097ff3bcc6091ab1149b';
+    try {
+        const anyUser = await User.findOne({});
+        if (anyUser) {
+            defaultOwner = anyUser._id;
+            console.log(`Using existing user "${anyUser.username}" (${anyUser._id}) as owner for seeded listings.`);
+        } else {
+            console.log(`No users found in database. Using default owner ID: ${defaultOwner}`);
+        }
+    } catch (err) {
+        console.log("Error finding existing user:", err.message);
+    }
+
     initData.data=initData.data.map((obj)=>({
         ...obj,
-        owner: '69c5097ff3bcc6091ab1149b',
+        owner: defaultOwner,
         category: getCategory(obj)
     }));
     await Listing.insertMany(initData.data);
