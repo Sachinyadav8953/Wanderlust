@@ -24,6 +24,7 @@ const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const User=require("./models/user.js"); 
 const userRouter=require("./routes/user.js");
+const bookingRouter=require("./routes/booking.js");
 const store=MongoStore.create({
     
      mongoUrl: dbUrl ,
@@ -69,6 +70,8 @@ app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currentUser = req.user;
+    res.locals.searchVal = req.query.search || "";
+    res.locals.selectedCategory = req.query.category || "";
     next();
 });
 app.get("/demouser",async(req,resp)=>{
@@ -94,6 +97,7 @@ app.get("/",(req,resp)=>{
 app.use("/listings",listingsRouter);
 app.use("/listings/:id/reviews",reviewsRouter);  
 app.use("/",userRouter); 
+app.use("/bookings",bookingRouter); 
 
 
 

@@ -34,7 +34,24 @@
             <button class="btn btn-danger">Delete</button>
         </form>
     </div>
-    <%} %>
+    <%} else if(!currentUser || !currentUser._id.equals(listing.owner._id)){ %>
+    <div class="col-6 offset-3 mt-4">
+        <div class="card p-4 border rounded shadow-sm booking-card">
+            <h4 class="mb-3">Book this Stay</h4>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Price:</span>
+                <span class="fs-5 fw-bold">&#8377;<%= listing.price.toLocaleString("en-IN") %> / night</span>
+            </div>
+            <% if(currentUser){ %>
+                <form action="/listings/<%= listing._id %>/book" method="POST">
+                    <button class="btn btn-primary w-100 py-2 btn-book">Pay with Stripe</button>
+                </form>
+            <% } else { %>
+                <a href="/login" class="btn btn-primary w-100 py-2 btn-book">Login to Book</a>
+            <% } %>
+        </div>
+    </div>
+    <% } %>
     <hr class="my-4" >
     <% if(currentUser){%>   
     <div class="col-8 offset-2">

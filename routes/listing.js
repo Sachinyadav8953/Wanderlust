@@ -37,4 +37,9 @@ router.route("/:id")
 //edit route
  .delete(isLoggedin,isOwner,wrapAsync(listingController.deleteListing));
 router.get("/:id/edit",isLoggedin,isOwner,validateListing,wrapAsync(listingController.editListing));
+
+// Booking/Checkout routes
+router.post("/:id/book", isLoggedin, wrapAsync(listingController.bookListing));
+router.get("/:id/book/success", isLoggedin, wrapAsync(listingController.bookSuccess));
+
 module.exports=router;

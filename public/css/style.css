@@ -341,4 +341,64 @@ a:hover {
     color: #717171;
     font-size: 0.9rem;
     margin-bottom: 2.5rem;
+}
+
+/* ===== BOOKING CARD & BUTTONS ===== */
+.booking-card {
+    background: #ffffff;
+    border: 1.5px solid #ebebeb !important;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
+}
+
+.btn-book {
+    background-color: #ff385c !important;
+    color: #ffffff !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 8px !important;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-book:hover {
+    background-color: #e0294d !important;
+    transform: scale(1.01);
+}
+
+.btn-book:active {
+    transform: scale(0.99);
+}
+
+/* ===== SEARCH BAR & BTN SEARCH STYLES ===== */
+.btn-search {
+    background-color: #ff385c !important;
+    color: #ffffff !important;
+    border-radius: 25px !important;
+    padding: 8px 18px !important;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-search:hover {
+    background-color: #e0294d !important;
+}
+
+.search-input {
+    border-radius: 25px !important;
+    padding: 8px 20px !important;
+    min-width: 250px;
+    border: 1px solid #ced4da !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+    border-color: #ff385c !important;
+    box-shadow: 0 4px 10px rgba(255, 56, 92, 0.15) !important;
 }

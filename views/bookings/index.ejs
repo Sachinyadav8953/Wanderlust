@@ -1,0 +1,58 @@
+<% layout("/listings/layouts/boilerplate") %>
+
+<div class="row mt-4">
+    <div class="col-8 offset-2">
+        <h3 class="mb-4">My Bookings</h3>
+        
+        <% if (bookings.length === 0) { %>
+            <div class="alert alert-info text-center p-5">
+                <i class="fa-regular fa-calendar-xmark fs-1 mb-3 text-muted d-block"></i>
+                <h5>No Bookings Found</h5>
+                <p class="text-muted">You haven't booked any stays yet. Explore Wanderlust to find your next adventure!</p>
+                <a href="/listings" class="btn btn-primary mt-3">Explore Listings</a>
+            </div>
+        <% } else { %>
+            <div class="row row-cols-lg-1 row-cols-md-1 row-cols-sm-1 g-4">
+                <% for (let booking of bookings) { %>
+                    <% if (booking.listing) { %>
+                        <div class="col">
+                            <div class="card mb-3 shadow-sm border rounded overflow-hidden">
+                                <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <img src="<%= booking.listing.image.url %>" class="img-fluid h-100 w-100 object-fit-cover" style="min-height: 200px;" alt="<%= booking.listing.title %>">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body d-flex flex-column h-100 justify-content-between">
+                                            <div>
+                                                <h5 class="card-title text-primary"><%= booking.listing.title %></h5>
+                                                <p class="card-text text-muted mb-2"><%= booking.listing.location %>, <%= booking.listing.country %></p>
+                                                <hr class="my-2">
+                                                <p class="card-text mb-1"><strong>Paid Amount:</strong> &#8377;<%= booking.amountPaid.toLocaleString("en-IN") %></p>
+                                                <p class="card-text mb-1"><strong>Booking Date:</strong> <%= new Date(booking.createdAt).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                                                <p class="card-text mb-1"><strong>Transaction ID:</strong> <code class="text-secondary"><%= booking.stripeSessionId %></code></p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <a href="/listings/<%= booking.listing._id %>" class="btn btn-outline-dark btn-sm">View Listing Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="col">
+                            <div class="card mb-3 shadow-sm border rounded bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-muted font-italic">Listing Unavailable (Deleted)</h5>
+                                    <p class="card-text mb-1"><strong>Paid Amount:</strong> &#8377;<%= booking.amountPaid.toLocaleString("en-IN") %></p>
+                                    <p class="card-text mb-1"><strong>Booking Date:</strong> <%= new Date(booking.createdAt).toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                                    <p class="card-text mb-1"><strong>Transaction ID:</strong> <code class="text-secondary"><%= booking.stripeSessionId %></code></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
