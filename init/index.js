@@ -5,17 +5,35 @@ const initData=require("./data.js");
 const Listing=require("../models/listing.js");
 const User=require("../models/user.js");
 
-const MONGO_URL = process.env.ATLAS_DB || "mongodb://127.0.0.1:27017/wanderlust";
+const localDbUrl = "mongodb://127.0.0.1:27017/wanderlust";
+const atlasDbUrl = process.env.ATLAS_DB;
+const MONGO_URL = atlasDbUrl && atlasDbUrl.includes("mongodb.net") ? localDbUrl : (atlasDbUrl || localDbUrl);
 main()
  .then(()=>{
     console.log("connected to DB");
  })
- .catch(err => console.log(err));
+ .catch(err => console.log("MongoDB startup failed:", err.message));
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  const candidates = [MONGO_URL, localDbUrl].filter(Boolean);
+  let lastError = null;
 
-  
+  for (const url of candidates) {
+    try {
+      await mongoose.connect(url, {
+        serverSelectionTimeoutMS: 5000,
+      });
+      console.log(`Connected to MongoDB: ${url}`);
+      return;
+    } catch (err) {
+      lastError = err;
+      console.warn(`MongoDB connection failed for ${url}: ${err.message}`);
+    }
+  }
+
+  if (lastError) {
+    throw new Error(`Could not connect to MongoDB. Checked: ${candidates.join(" | ")}`);
+  }
 }
 function getCategory(listing) {
     const text = ((listing.title || "") + " " + (listing.description || "")).toLowerCase();

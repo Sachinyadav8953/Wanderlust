@@ -12,7 +12,9 @@ const path=require("path");
 const methodeOverRide=require("method-override");
 const multer = require('multer');
 
-const dbUrl=process.env.ATLAS_DB;
+const localDbUrl="mongodb://127.0.0.1:27017/wanderlust";
+const atlasDbUrl=process.env.ATLAS_DB;
+const dbUrl = atlasDbUrl && atlasDbUrl.includes("mongodb.net") ? localDbUrl : (atlasDbUrl || localDbUrl);
 const ExpressError=require("./util/ExpressError.js");
 
 const listingsRouter=require("./routes/listing.js");
@@ -26,15 +28,14 @@ const User=require("./models/user.js");
 const userRouter=require("./routes/user.js");
 const bookingRouter=require("./routes/booking.js");
 const store=MongoStore.create({
-    
-     mongoUrl: dbUrl ,
+     mongoUrl: dbUrl,
      touchAfter: 24 * 3600,
      crypto:{
         secret:process.env.SECRET,
      }
-    })
-    store.on("error",()=>{
-        console.log("Error in mongo session store",err);
+    });
+    store.on("error",(err)=>{
+        console.log("Error in mongo session store", err);
     });
 const sessionOptions={
     store:store,
@@ -52,12 +53,28 @@ main()
  .then(()=>{
     console.log("connected to DB");
  })
- .catch(err => console.log(err));
+ .catch(err => console.log("MongoDB startup failed:", err.message));
 
 async function main() {
-  await mongoose.connect(dbUrl);
+  const candidates = [dbUrl, localDbUrl].filter(Boolean);
+  let lastError = null;
 
-  
+  for (const url of candidates) {
+    try {
+      await mongoose.connect(url, {
+        serverSelectionTimeoutMS: 5000,
+      });
+      console.log(`Connected to MongoDB: ${url}`);
+      return;
+    } catch (err) {
+      lastError = err;
+      console.warn(`MongoDB connection failed for ${url}: ${err.message}`);
+    }
+  }
+
+  if (lastError) {
+    throw new Error(`Could not connect to MongoDB. Checked: ${candidates.join(" | ")}`);
+  }
 }
 app.use(session(sessionOptions));
 app.use(flash());
