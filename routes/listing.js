@@ -17,7 +17,7 @@ const path = require('path');
 const wrapAsync=require("../util/wrapAsync.js");
 const listingController=require("../controllers/listings.js");
 const {listingSchema}=require("../schema.js");
-const { isLoggedin,isOwner,validateListing }=require("../middleware.js");
+const { isLoggedin,isOwner,validateListing }=require("../middlewares.js");
 //index route
 router.route("/") 
 .get(wrapAsync(listingController.index))

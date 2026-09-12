@@ -3,7 +3,7 @@ const router=express.Router({mergeParams:true});
 
 const reviewController=require("../controllers/review.js");
 const Listing=require("../models/listing.js");
-const { validateReview ,isLoggedin,isReviewAuthor}=require("../middleware.js");
+const { validateReview ,isLoggedin,isReviewAuthor}=require("../middlewares.js");
 const wrapAsync=require("../util/wrapAsync.js");
 
 

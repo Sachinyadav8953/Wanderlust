@@ -2,7 +2,7 @@ const express=require("express");
 const router=express.Router();
 const passport=require("passport");
 const userController=require("../controllers/user.js");
-const { saveRedirectUrl }=require("../middleware.js");
+const { saveRedirectUrl }=require("../middlewares.js");
 //signup form
 router.get("/signup",userController.renderSignUpForm);
 //signup logic
