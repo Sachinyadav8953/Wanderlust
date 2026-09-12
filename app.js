@@ -13,8 +13,10 @@ const methodeOverRide=require("method-override");
 const multer = require('multer');
 
 const localDbUrl="mongodb://127.0.0.1:27017/wanderlust";
-const atlasDbUrl=process.env.ATLAS_DB;
-const dbUrl = atlasDbUrl && atlasDbUrl.includes("mongodb.net") ? localDbUrl : (atlasDbUrl || localDbUrl);
+const isVercel = Boolean(process.env.VERCEL);
+const dbUrl = isVercel
+    ? (process.env.ATLAS_DB || process.env.MONGODB_URI || localDbUrl)
+    : (process.env.MONGODB_URI || localDbUrl);
 const ExpressError=require("./util/ExpressError.js");
 
 const listingsRouter=require("./routes/listing.js");
@@ -49,14 +51,16 @@ const sessionOptions={
     }
 };
 
-main()
- .then(()=>{
-    console.log("connected to DB");
- })
- .catch(err => console.log("MongoDB startup failed:", err.message));
+if (dbUrl) {
+    main()
+     .then(()=>{
+        console.log("connected to DB");
+     })
+     .catch(err => console.log("MongoDB startup failed:", err.message));
+}
 
 async function main() {
-  const candidates = [dbUrl, localDbUrl].filter(Boolean);
+  const candidates = [...new Set([dbUrl, localDbUrl])].filter(Boolean);
   let lastError = null;
 
   for (const url of candidates) {
@@ -133,6 +137,11 @@ app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong" } = err;
     res.status(statusCode).render("error.ejs",{message});
 });
-app.listen(8800,()=>{
-    console.log("server is listening to port 8800");
-})
+if (require.main === module) {
+    const port = process.env.PORT || 8800;
+    app.listen(port, () => {
+        console.log(`server is listening to port ${port}`);
+    });
+}
+
+module.exports = app;

@@ -6,8 +6,7 @@ const Listing=require("../models/listing.js");
 const User=require("../models/user.js");
 
 const localDbUrl = "mongodb://127.0.0.1:27017/wanderlust";
-const atlasDbUrl = process.env.ATLAS_DB;
-const MONGO_URL = atlasDbUrl && atlasDbUrl.includes("mongodb.net") ? localDbUrl : (atlasDbUrl || localDbUrl);
+const MONGO_URL = process.env.ATLAS_DB || process.env.MONGODB_URI || localDbUrl;
 main()
  .then(()=>{
     console.log("connected to DB");
@@ -15,7 +14,7 @@ main()
  .catch(err => console.log("MongoDB startup failed:", err.message));
 
 async function main() {
-  const candidates = [MONGO_URL, localDbUrl].filter(Boolean);
+  const candidates = [...new Set([MONGO_URL, localDbUrl])].filter(Boolean);
   let lastError = null;
 
   for (const url of candidates) {
